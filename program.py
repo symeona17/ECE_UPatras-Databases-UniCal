@@ -60,7 +60,8 @@ def login_ka8hghths(): #Login Καθηγητή
 
 def foithths(AM):
     #Επιλογή λειτουργίας
-    epilogh_foit=input("\nΕπέλεξε λειτουργία:\n1 --> Που έχω μάθημα τώρα;\n2 --> Ψάχνω κάποιον καθηγητή\n3 --> Ποιά μαθήματα επικαλύπτονται μεταξύ τους;\n4 --> Ποιο είναι το προγραμμά μου; \n5 --> Εγγραφή/Απεγγραφή από μάθημα \n")
+    epilogh_foit=input("\nΕπέλεξε λειτουργία:\n1 --> Που έχω μάθημα τώρα;\n2 --> Ψάχνω κάποιον καθηγητή\n\
+3 --> Ποιά μαθήματα επικαλύπτονται μεταξύ τους;\n4 --> Ποιο είναι το προγραμμά μου; \n5 --> Εγγραφή/Απεγγραφή από μάθημα \n")
     while True:
         if epilogh_foit=="1":
             pou_ma8hma(AM)
@@ -82,7 +83,9 @@ def foithths(AM):
         
 
 def pou_ma8hma(AM): #Συνάρτηση "Που έχω μάθημα τώρα"
-    buf="SELECT Course.name, Auditorium.name, Auditorium.building, Auditorium.floor FROM (Audience JOIN Course on course_id=Course.id) JOIN audience_auditorium JOIN Auditorium JOIN student_auditorium ON student_ΑΜ='"+str(AM)+"' WHERE start_time<=time('now','localtime') AND end_time>=time('now','localtime') AND start_date<=date('now','localtime') AND end_date>=date('now','localtime') AND strftime('%w','now')=Audience.day GROUP BY Course.id;"
+    buf="SELECT Course.name, Auditorium.name, Auditorium.building, Auditorium.floor FROM (Audience JOIN Course on course_id=Course.id)\
+JOIN audience_auditorium JOIN Auditorium JOIN student_audience ON student_ΑΜ='"+str(AM)+"' WHERE start_time<=time('now','localtime')\
+AND end_time>=time('now','localtime') AND start_date<=date('now','localtime') AND end_date>=date('now','localtime') AND strftime('%w','now')=Audience.day GROUP BY Course.id;"
     try:
         c.execute(buf)
         result=c.fetchall()
@@ -108,7 +111,9 @@ def pou_ka8hghths(AM): #Συνάρτηση "Ψάχνω κάποιον καθηγ
             print("Παρακαλώ πληκτρολόγησε κατάλληλο κωδικό καθηγητή.")
         else:
             #Έλεγχος εαν ο καθηγητής βρίσκεται αυτή τη στιγμή σε μάθημα
-            buf="SELECT fname, lname, Auditorium.name, Auditorium.building, Auditorium.floor, Audience.end_time  FROM professor_audience as pa JOIN Professor as p JOIN Audience JOIN audience_auditorium as aa JOIN Auditorium on Audience.id=aa.audience_id AND Auditorium.id=aa.auditorium_id AND pa.professor_id=p.id AND pa.audience_id=Audience.id WHERE p.id='"+str(prof_id)+"' AND start_time<=time('now','localtime') AND end_time>=time('now','localtime') and day=strftime('%w','now','localtime');"
+            buf="SELECT fname, lname, Auditorium.name, Auditorium.building, Auditorium.floor, Audience.end_time  FROM professor_audience as pa \
+JOIN Professor as p JOIN Audience JOIN audience_auditorium as aa JOIN Auditorium on Audience.id=aa.audience_id AND Auditorium.id=aa.auditorium_id \
+AND pa.professor_id=p.id AND pa.audience_id=Audience.id WHERE p.id='"+str(prof_id)+"' AND start_time<=time('now','localtime') AND end_time>=time('now','localtime') and day=strftime('%w','now','localtime');"
             c.execute(buf)
             result=c.fetchall()        
             if len(result)!=0: #Εμφάνιση της αίθουσας που βρίσκεται ο καθηγητής
@@ -135,7 +140,8 @@ def pou_ka8hghths(AM): #Συνάρτηση "Ψάχνω κάποιον καθηγ
     
 def epikalisph(AM): #Συνάρτηση "Ποια μαθήματα επικαλύπτονται μεταξύ τους"
     for k in range(0,6):
-        buf="SELECT C.name,D.name FROM (Audience A JOIN Course C on A.course_id=C.id) JOIN (Audience B JOIN Course D on B.course_id=D.id) WHERE A.start_time<=B.start_time AND A.end_time>B.start_time AND A.course_id!=B.course_id AND A.day='"+str(k)+"' AND B.day='"+str(k)+"' GROUP BY A.course_id AND B.course_id;"
+        buf="SELECT C.name,D.name FROM (Audience A JOIN Course C on A.course_id=C.id) JOIN (Audience B JOIN Course D on B.course_id=D.id)\
+WHERE A.start_time<=B.start_time AND A.end_time>B.start_time AND A.course_id!=B.course_id AND A.day='"+str(k)+"' AND B.day='"+str(k)+"' GROUP BY A.course_id AND B.course_id;"
         try:
             c.execute(buf)
             result=c.fetchall()
@@ -153,9 +159,10 @@ def programma(AM): #Συνάρτηση εμφάνισης προγράμματο
     if int(k) not in range(0,8):
         print("Παρακαλώ επέλεξε μία από τις παραπάνω επιλογές. (0-7)")
     else:
-        if k=="7":
+        if k=="7": #Αν ο Φοιτητής θέλει να δει το πρόγραμμά του για όλες τις μέρες
             for m in range(0,6):
-                buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa, audience_auditorium as aa, Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(m)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
+                buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa,\
+audience_auditorium as aa, Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(m)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
                 try:
                     c.execute(buf)
                     result=c.fetchall()
@@ -167,21 +174,23 @@ def programma(AM): #Συνάρτηση εμφάνισης προγράμματο
                             print(result[l][0], "από τις", result[l][5], "μέχρι τις", result[l][6], "στην αίθουσα", result[l][2], "η οποία βρίσκεται στο κτήριο", result[l][3], "στον όροφο", result[l][4], "\n")
                 except:
                     print("Error")
-            for m in range(7): #Διαφορετική περίπτωση για το 
-                buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa, audience_auditorium as aa, Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(m)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
-                try:
-                    c.execute(buf)
-                    result=c.fetchall()
-                    if len(result)==0:
-                        print("Το", days[m], "δεν έχεις μάθημα.")
-                    else:
-                        print("Το", days[m], "έχεις:")
-                        for l in range(len(result)):
-                            print(result[l][0], "από τις", result[l][5], "μέχρι τις", result[l][6], "στην αίθουσα", result[l][2], "η οποία βρίσκεται στο κτήριο", result[l][3], "στον όροφο", result[l][4], "\n")
-                except:
-                    print("Error")
+            #Διαφορετική περίπτωση για το Σάββατο για την χρήση σωστού άρθρου
+            buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa, audience_auditorium as aa,\
+Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(m)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
+            try:
+                c.execute(buf)
+                result=c.fetchall()
+                if len(result)==0:
+                    print("Το", days[6], "δεν έχεις μάθημα.")
+                else:
+                    print("Το", days[6], "έχεις:")
+                    for l in range(len(result)):
+                        print(result[l][0], "από τις", result[l][5], "μέχρι τις", result[l][6], "στην αίθουσα", result[l][2], "η οποία βρίσκεται στο κτήριο", result[l][3], "στον όροφο", result[l][4], "\n")
+            except:
+                print("Error")
         else: #Αν ο φοιτητής θέλει να δει το πρόγραμμα για μια συγκεκριμένη ημέρα
-            buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa, audience_auditorium as aa, Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(k)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
+            buf="select c.name, a.id, au.name, au.building, au.floor, start_time, end_time from Audience as a, Course as c, student_audience as sa, audience_auditorium as aa,\
+Auditorium as au where ( (sa.audience_id = a.id and c.id = a.course_id and aa.audience_id=a.id and au.id=aa.auditorium_id) and day='"+str(k)+"' and sa.student_ΑΜ = '"+str(AM)+"');"
             try:
                 c.execute(buf)
                 result=c.fetchall()
@@ -215,10 +224,11 @@ def eggrafh(AM): #Συνάρτηση εγγραφής/απεγγραφής απ�
             if mathima not in math_list: #Έλεγχος αν το input είναι κατάλληλο
                 print("Παρακαλώ πληκτρολόγησε κατάλληλο κωδικό μαθήματος.")
             else:
-                buf="SELECT Audience.id, Course.name, student_audience.student_ΑΜ FROM Course JOIN Audience JOIN student_audience on Course.id=Audience.course_id AND Audience.id=student_audience.audience_id WHERE audience_id='"+str(mathima)+"' AND student_ΑΜ='"+str(AM)+"';"
+                buf="SELECT Audience.id, Course.name, student_audience.student_ΑΜ FROM Course JOIN Audience JOIN student_audience on Course.id=Audience.course_id \
+AND Audience.id=student_audience.audience_id WHERE audience_id='"+str(mathima)+"' AND student_ΑΜ='"+str(AM)+"';"
                 c.execute(buf)
                 result = c.fetchall()
-                if len(result)!=1:
+                if len(result)!=1: #Έλεγχος αν ο φοιτητής είναι ήδη γραμμένος στο μάθημα
                     buf="insert into student_audience (audience_id, student_ΑΜ ) SELECT '"+str(mathima)+"', '"+str(AM)+"' WHERE not exists(SELECT * FROM student_audience WHERE audience_id='"+str(mathima)+"' AND student_ΑΜ='"+str(AM)+"');"
                     c.execute(buf)
                     buf="SELECT Audience.id, Course.name FROM Audience JOIN Course on Audience.course_id=Course.id WHERE audience.id='"+str(mathima)+"';"
@@ -282,9 +292,10 @@ def ka8hghths(username):
         break
 
 def dia8esimothta_foithtwn(username):
-    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id WHERE Professor.Id='"+str(username)+"';"
+    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id \
+JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id WHERE Professor.Id='"+str(username)+"';"
     try:
-        c.execute(buf)
+        c.execute(buf) #Προβολή ακροατηρίων στα οποία ο συνδεδεμένος καθηγητής είναι υπεύθυνος
         result = c.fetchall()
         print("Είστε διδάσκων στα ακροατήρια:")
         check_akroat=[]
@@ -304,7 +315,9 @@ def dia8esimothta_foithtwn(username):
                 if (a not in range (0,25)) or (b not in range (0,25)):
                     print("Παρακαλώ πληκτρολογήστε κατάλληλο αριθμό ωρών.")
                 else:
-                    buf="select count(student_ΑΜ) from student_audience where audience_id = '"+str(akroat)+"' and student_ΑΜ in (select student_ΑΜ from student_audience, Audience where student_audience.audience_id = Audience.id except select student_ΑΜ from student_audience, Audience where student_audience.audience_id = Audience.id and day='"+str(d)+"' and (((strftime('%H',start_time)>='"+str(a)+"' AND strftime('%H',start_time)<='"+str(b)+"') OR (strftime('%H',end_time)>'"+str(a)+"' AND strftime('%H',end_time)<'"+str(b)+"')) OR (strftime('%H',start_time)<='"+str(a)+"' AND strftime('%H',end_time)>='"+str(b)+"')))"
+                    buf="select count(student_ΑΜ) from student_audience where audience_id = '"+str(akroat)+"' and student_ΑΜ in (select student_ΑΜ from student_audience, Audience \
+where student_audience.audience_id = Audience.id except select student_ΑΜ from student_audience, Audience where student_audience.audience_id = Audience.id and day='"+str(d)+"' \
+and (((strftime('%H',start_time)>='"+str(a)+"' AND strftime('%H',start_time)<='"+str(b)+"') OR (strftime('%H',end_time)>'"+str(a)+"' AND strftime('%H',end_time)<'"+str(b)+"')) OR (strftime('%H',start_time)<='"+str(a)+"' AND strftime('%H',end_time)>='"+str(b)+"')))"
                     c.execute(buf)
                     result = c.fetchall()
                     print("Τις ώρες που επιλέξατε από το ακροατήριο", akroat, "είναι διαθέσιμοι", result[0][0], "φοιτητές.")
@@ -314,16 +327,18 @@ def dia8esimothta_foithtwn(username):
     return
     
 
-def dia8esimothta_ai8ousas(username):
-    d=input("Παρακαλώ επιλέξτε ποια ημέρα θα θέλατε να αναζητήσετε διαθέσιμη αίθουσα: \n0 --> Κυριακή \n1 --> Δευτέρα \n2 --> Τρίτη \n3 --> Τετάρτη \n4 --> Πέμπτη \n5 --> Παρασκευή \n6-->Σάββατο \n")
+def dia8esimothta_ai8ousas(username): #Αναζήτηση διαθέσιμων αιθουσών για συγκεκριμένες ώρες τις βδομάδας
+    d=int(input("Παρακαλώ επιλέξτε ποια ημέρα θα θέλατε να αναζητήσετε διαθέσιμη αίθουσα: \n0 --> Κυριακή \n1 --> Δευτέρα \n2 --> Τρίτη \n3 --> Τετάρτη \n4 --> Πέμπτη \n5 --> Παρασκευή \n6-->Σάββατο \n"))
     if d not in range (0,7):
-                    print("Παρακαλώ πληκτρολογήστε κατάλληλο αριθμό ωρών.")
+                    print("Παρακαλώ πληκτρολογήστε κατάλληλο αριθμό ημέρας.")
     a=int(input("Θα ήθελα διαθέσιμη αίθουσα από τις: (Σε μορφή 0-24) \n"))
     b=int(input("Μέχρι τις: (Σε μορφή 0-24) \n"))
     if (a not in range (0,25)) or (b not in range (0,25)):
         print("Παρακαλώ πληκτρολογήστε κατάλληλο αριθμό ωρών.")
     else:        
-        buf="SELECT * FROM Auditorium WHERE id NOT IN(SELECT Auditorium.id FROM Auditorium JOIN audience_auditorium on auditorium_id=Auditorium.id JOIN Audience on audience_id=Audience.id WHERE Audience.day='"+str(d)+"' AND ((strftime('%H',start_time)>='"+str(a)+"'AND strftime('%H',start_time)<='"+str(d)+"') OR (strftime('%H',end_time)>'"+str(a)+"' AND strftime('%H',end_time)<'"+str(b)+"')) OR (strftime('%H',start_time)<='"+str(a)+"' AND strftime('%H',end_time)>'"+str(b)+"'));"
+        buf="SELECT * FROM Auditorium WHERE id NOT IN(SELECT Auditorium.id FROM Auditorium JOIN audience_auditorium on auditorium_id=Auditorium.id \
+JOIN Audience on audience_id=Audience.id WHERE Audience.day='"+str(d)+"' AND ((strftime('%H',start_time)>='"+str(a)+"'AND strftime('%H',start_time)<='"+str(d)+"') \
+OR (strftime('%H',end_time)>'"+str(a)+"' AND strftime('%H',end_time)<'"+str(b)+"')) OR (strftime('%H',start_time)<='"+str(a)+"' AND strftime('%H',end_time)>'"+str(b)+"'));"
         try:
             c.execute(buf)
             result = c.fetchall()
@@ -337,8 +352,9 @@ def dia8esimothta_ai8ousas(username):
 
     
 
-def allagh_didaskonta(username):
-    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id;"
+def allagh_didaskonta(username): #Αλλαγή/Update του διδάσκοντα ενός ακροατηρίου
+    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id \
+JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id;"
     try:
         c.execute(buf)
         result = c.fetchall()
@@ -367,7 +383,8 @@ def allagh_didaskonta(username):
                     c.execute(buf)
                     conn.commit()
                     print("Η διαδικασία ολοκληρώθηκε. \n")
-                    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id WHERE Audience.id='"+str(akroat)+"';"
+                    buf="SELECT Audience.id, Course.name, Professor.id, Professor.fname, Professor.lname FROM Audience JOIN Course on Audience.course_id=Course.id \
+JOIN professor_audience on professor_audience.audience_id=Audience.id JOIN Professor on Professor.Id=professor_audience.professor_id WHERE Audience.id='"+str(akroat)+"';"
                     c.execute(buf)
                     result = c.fetchall()
                     print("Το ακροατήριο", result[0][0], "έχει νέο διδάσκοντα τον", result[0][3], result[0][4])
@@ -382,7 +399,7 @@ def allagh_didaskonta(username):
 
 print("\nΚαλώς ορίσατε!")
 
-def main():
+def main(): #Επιλογή εισόδου, διαφορετικές συναρτήσεις για φοιτητή ή καθηγητή
     x=0
     while x!=" ":
         x=input("\nΕπιλογή εισόδου: \n1 --> Είσοδος Φοιτητή \n2 --> Είσοδος Καθηγητή \n")
