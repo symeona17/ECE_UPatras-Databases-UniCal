@@ -30,7 +30,7 @@
 
 Μετά την ολοκλήρωση του ERD μοντέλου, το μετασχηματίσαμε στο αντίστοιχο λογικό μοντέλο (schema) το οποίο φαίνεται στην παρακάτω εικόνα:
 
-![Schema](Logic Model.png)
+![Schema]([Logic Model.png](https://github.com/symeona17/ECE_UPatras-Databases-UniCal/blob/main/Logic%20Model.png))
 
 ## Φάση Β: Υλοποίηση της βάσης δεδομένων και queries SQL
 
