@@ -1,6 +1,6 @@
 import sqlite3;
 #Σύνδεση με τη βάση
-conn = sqlite3.connect("project1.db");
+conn = sqlite3.connect("UniCal.db");
 c = conn.cursor();
 
 #Συναρτήσεις Login
